@@ -2,22 +2,22 @@
 # Make sure to check the documentation at http://goreleaser.com
 before:
     hooks:
-      # you may remove this if you don't use vgo
-      - go mod download
-  builds:
+        # you may remove this if you don't use vgo
+        - go mod download
+builds:
     - env:
         - CGO_ENABLED=0
-      main: ./main.go
-  archives:
+        main: ./main.go
+archives:
     - replacements:
         darwin: Darwin
         linux: Linux
         windows: Windows
         386: i386
         amd64: x86_64
-  checksum:
+checksum:
     name_template: "checksums.txt"
-  snapshot:
+snapshot:
     name_template: "{{ .Tag }}-next"
-  changelog:
+changelog:
     skip: true
