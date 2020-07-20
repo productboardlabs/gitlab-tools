@@ -36,9 +36,9 @@ check-branch:
     stage: check-branch # a stage which preceeds an expensive pipeline
     image: alpine:latest # any image can be used
     variables:
-    GIT_STRATEGY: none # Git is not needed
-    GITHUB_REPOSITORY: productboardlabs/gitlab-tools # repo name in owner/repo format
-    GITHUB_TOKEN: sometoken
+        GIT_STRATEGY: none # Git is not needed
+        GITHUB_REPOSITORY: productboardlabs/gitlab-tools # repo name in owner/repo format
+        GITHUB_TOKEN: sometoken
     cache: {}
     rules:
         # run only on branches. Can be set up for master as well
