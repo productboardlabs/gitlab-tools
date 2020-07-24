@@ -2,8 +2,7 @@ package githubclient
 
 import (
 	"context"
-
-	"github.com/shurcooL/githubv4"
+	"fmt"
 )
 
 var latestCommitQuery struct {
@@ -17,17 +16,13 @@ var latestCommitQuery struct {
 }
 
 func (client *Client) LatestCommitOnBranch(owner, repo, reference, commit string) (bool, error) {
-	variables := map[string]interface{}{
-		"owner":     githubv4.String(owner),
-		"repo":      githubv4.String(repo),
-		"reference": githubv4.String(reference),
-	}
+	ctx := context.Background()
 
-	err := client.ghClient.Query(context.Background(), &latestCommitQuery, variables)
+	ref, _, err := client.ghClient.Git.GetRef(ctx, owner, repo, fmt.Sprintf("heads/%s", reference))
 
 	if err != nil {
 		return false, err
 	}
 
-	return latestCommitQuery.Repository.Ref.Target.OID == commit, nil
+	return *ref.Object.SHA == commit, nil
 }
