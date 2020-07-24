@@ -5,16 +5,6 @@ import (
 	"fmt"
 )
 
-var latestCommitQuery struct {
-	Repository struct {
-		Ref struct {
-			Target struct {
-				OID string
-			}
-		} `graphql:"ref(qualifiedName: $reference)"`
-	} `graphql:"repository(owner: $owner, name: $repo)"`
-}
-
 func (client *Client) LatestCommitOnBranch(owner, repo, reference, commit string) (bool, error) {
 	ctx := context.Background()
 
