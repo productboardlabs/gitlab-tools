@@ -6,16 +6,17 @@ import (
 	"github.com/google/go-github/v32/github"
 )
 
-func (client *Client) SetCheckStatus(owner, repo, status, jobName, commit string) error {
+func (client *Client) SetCheckStatus(owner, repo, status, jobName, description, jobURL, commit string) error {
 	ctx := context.Background()
 
-	options := github.CreateCheckRunOptions{
-		Name:    jobName,
-		HeadSHA: commit,
-		Status:  &status,
+	options := github.RepoStatus{
+		State:       &status,
+		Description: &description,
+		Context:     &jobName,
+		TargetURL:   &jobURL,
 	}
 
-	_, _, err := client.ghClient.Checks.CreateCheckRun(ctx, owner, repo, options)
+	_, _, err := client.ghClient.Repositories.CreateStatus(ctx, owner, repo, commit, &options)
 
 	return err
 }

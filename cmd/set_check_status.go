@@ -35,6 +35,21 @@ func (runner *Runner) setStatus() *cobra.Command {
 
 			status := viper.GetString("STATUS")
 
+			description := viper.GetString("DESCRIPTION")
+
+			jobURL := viper.GetString("CI_JOB_URL")
+
+			exitCode, err := cmd.Flags().GetInt("exit-code")
+
+			if err == nil {
+				if exitCode == 0 {
+					status = "success"
+				}
+				if exitCode > 0 {
+					status = "failure"
+				}
+			}
+
 			if repository[0] == "" {
 				return errors.New("missing repository")
 			}
@@ -48,7 +63,7 @@ func (runner *Runner) setStatus() *cobra.Command {
 			}
 
 			if status == "" {
-				return errors.New("missing status, available are queued, in_progress, or completed")
+				return errors.New("missing status, available are error, failure, pending, or success")
 			}
 
 			jobName := cmd.Flag("name").Value.String()
@@ -57,11 +72,13 @@ func (runner *Runner) setStatus() *cobra.Command {
 				jobName = fmt.Sprintf("%s/%s", viper.GetString("CI_JOB_STAGE"), viper.GetString("CI_JOB_NAME"))
 			}
 
-			err := github.SetCheckStatus(
+			err = github.SetCheckStatus(
 				repository[0],
 				repository[1],
 				status,
 				jobName,
+				description,
+				jobURL,
 				commitSha,
 			)
 
@@ -93,11 +110,27 @@ func (runner *Runner) setStatus() *cobra.Command {
 	command.Flags().String("commit", "", "commit hash of current commit")
 	err = viper.BindPFlag("CI_COMMIT_SHA", command.Flags().Lookup("commit"))
 
-	command.Flags().String("name", "", "name of status that show up in Github")
+	if err != nil {
+		runner.debugLogger.Printf("failed to bindPflag commit %s", err)
+	}
+
+	command.Flags().String("status-name", "", "name of status that show up in Github")
+
+	command.Flags().String("url", "", "commit hash of current commit")
+	err = viper.BindPFlag("CI_JOB_URL", command.Flags().Lookup("url"))
 
 	if err != nil {
-		runner.debugLogger.Printf("failed to bindPflag Github token %s", err)
+		runner.debugLogger.Printf("failed to bindPflag url %s", err)
 	}
+
+	command.Flags().String("description", "", "commit hash of current commit")
+	err = viper.BindPFlag("DESCRIPTION", command.Flags().Lookup("description"))
+
+	if err != nil {
+		runner.debugLogger.Printf("failed to bindPflag description %s", err)
+	}
+
+	command.Flags().Int("exit-code", 0, "exit code of previous process")
 
 	return command
 }
