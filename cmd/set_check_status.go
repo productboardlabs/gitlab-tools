@@ -66,7 +66,7 @@ func (runner *Runner) setStatus() *cobra.Command {
 				return errors.New("missing status, available are error, failure, pending, or success")
 			}
 
-			jobName := cmd.Flag("name").Value.String()
+			jobName := cmd.Flag("status-name").Value.String()
 
 			if jobName == "" {
 				jobName = fmt.Sprintf("%s/%s", viper.GetString("CI_JOB_STAGE"), viper.GetString("CI_JOB_NAME"))
