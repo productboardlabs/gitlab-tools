@@ -41,7 +41,7 @@ func (runner *Runner) setStatus() *cobra.Command {
 
 			exitCode, err := cmd.Flags().GetInt("exit-code")
 
-			if err == nil {
+			if err == nil && status == "" {
 				if exitCode == 0 {
 					status = "success"
 				}
